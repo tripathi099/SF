@@ -1,9 +1,20 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.predictor import ModelRuntime, load_model_runtime, predict_crop
 from backend.app.schemas import HealthResponse, PredictionRequest, PredictionResponse
 
 app = FastAPI(title="Crop Recommendation API", version="0.1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://sf-six-puce.vercel.app",
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 runtime: ModelRuntime = load_model_runtime()
 

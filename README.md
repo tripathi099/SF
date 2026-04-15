@@ -1,99 +1,68 @@
-# Smart Farming Assistant — Crop Recommendation (Full-Stack ML Demo)
+# Smart Farming Assistant
 
-A portfolio-oriented full-stack project that recommends crops from soil and weather inputs using a trained ML model served through a Python API and consumed by a React UI.
+An end-to-end full-stack ML application that turns soil and weather inputs into actionable crop recommendations through a production-style web product.
 
----
+## Live Demo
 
-## 1) Project Overview
+- Frontend (Vercel): https://sf-six-puce.vercel.app
+- Backend (Render): https://sf-tydj.onrender.com
 
-This project started as notebook-based ML experimentation and was productized into a demo-ready web application:
+How to use:
+1. Open the frontend URL.
+2. Enter all 7 required soil/weather inputs.
+3. Submit to get the recommended crop, confidence score, top-3 alternatives, and model status.
 
-- **ML training pipeline** in Python (artifact-based, reproducible)
-- **FastAPI backend** for inference (`/health`, `/predict`)
-- **React + TypeScript + Material UI frontend** for a clean, interactive user flow
+## Problem Statement
 
-The goal is to demonstrate practical product thinking: take research code and turn it into a usable, testable application.
+Crop selection is a high-impact decision influenced by soil nutrients and local weather patterns. In many settings, growers need a fast, data-informed starting point rather than manual trial-and-error.
 
----
+This project solves that by exposing an ML-powered recommendation workflow in a simple web application, making model inference accessible through a user-friendly interface.
 
-## 2) Problem Statement
+## Key Features
 
-Farmers and agricultural planners often need quick recommendations about which crop best matches local soil nutrients and weather conditions. This application provides a simple input-to-recommendation workflow for:
+- Real-time ML prediction through a FastAPI inference endpoint.
+- Typed frontend-backend integration using TypeScript and structured API contracts.
+- Input validation, loading states, and error handling for reliable UX.
+- Top-3 prediction alternatives with confidence values for decision support.
+- Model status feedback surfaced from backend health/runtime state.
 
-- N, P, K soil nutrient levels
-- temperature
-- humidity
-- pH
-- rainfall
+## Architecture Overview
 
-The model returns:
+Pipeline flow:
 
-- a recommended crop,
-- confidence score,
-- top alternatives.
+`Dataset` → `Training Script` → `Model Artifact` → `FastAPI Inference API` → `React Frontend`
 
----
+- The crop dataset (`Crop_recommendation.csv`) is used to train a Decision Tree model.
+- Training outputs a persisted artifact (`.joblib`) consumed by the backend at runtime.
+- The backend exposes `/health` and `/predict` endpoints.
+- The frontend collects inputs, calls the API, and renders prediction results and alternatives.
 
-## 3) Why This Project Is Relevant
+This project demonstrates the transition from notebook experimentation to a deployable product architecture.
 
-This project highlights skills frequently requested in product-focused software roles:
-
-- **React + TypeScript UI development** with componentized structure
-- **Material UI implementation** for polished, demo-friendly UX
-- **Backend API integration** with explicit contracts and error handling
-- **ML-to-product workflow** (training script → artifact → API inference)
-
-It is designed to be easy to discuss in interviews as an end-to-end build.
-
----
-
-## 4) Key Features
-
-- End-to-end crop recommendation workflow
-- Local model training script that saves artifacts for runtime use
-- FastAPI inference API with typed request/response models
-- Frontend form with validation and backend-connected prediction flow
-- UI states for loading, success, and error handling
-- Top-3 alternatives and model status shown in the UI
-
----
-
-## 5) Architecture Summary
-
-### High-level flow
-
-`Crop_recommendation.csv`  
-→ `backend/ml/train.py` (train model)  
-→ `backend/models/crop_recommendation_model.joblib` (saved artifact)  
-→ `backend/app/main.py` FastAPI `/predict` (inference)  
-→ `frontend` React app (form submission + result rendering)
-
-### Runtime responsibilities
-
-- **Training layer**: fits `DecisionTreeClassifier` and persists artifact/metrics
-- **Backend layer**: loads artifact and returns prediction response
-- **Frontend layer**: collects input, validates values, calls API, renders results
-
----
-
-## 6) Tech Stack
-
-### Backend / ML
-- Python
-- FastAPI
-- scikit-learn
-- pandas, numpy
-- joblib
+## Tech Stack
 
 ### Frontend
 - React
 - TypeScript
 - Vite
-- Material UI (MUI)
+- Material UI
 
----
+### Backend
+- FastAPI
+- Pydantic
+- Uvicorn
 
-## 7) Project Structure
+### Machine Learning
+- scikit-learn (Decision Tree)
+- pandas
+- numpy
+- joblib
+
+### Deployment
+- Vercel (frontend)
+- Render (backend)
+
+## Project Structure
 
 ```text
 .
@@ -105,111 +74,28 @@ It is designed to be easy to discuss in interviews as an end-to-end build.
 │   │   └── schemas.py
 │   ├── ml/
 │   │   └── train.py
-│   └── models/                # generated artifacts (ignored in git)
+│   └── models/                    # generated artifacts
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
 │   │   ├── services/api.ts
 │   │   ├── theme.ts
 │   │   └── types.ts
+│   ├── index.html
 │   └── package.json
 ├── scripts/
 │   └── train_model.py
 ├── Crop_recommendation.csv
-├── SmartFarming.ipynb         # legacy/research notebook
+├── SmartFarming.ipynb             # original notebook workflow
+├── requirements.txt
 └── README.md
 ```
 
----
-
-## 8) Local Setup
-
-> Prerequisites: Python 3.10+ and Node.js 18+
-
-### 8.1 Clone the repository
-
-```bash
-git clone <your-repo-url>
-cd SF
-```
-
-### 8.2 Install Python dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 8.3 Install frontend dependencies
-
-```bash
-cd frontend
-npm install
-cd ..
-```
-
----
-
-## 9) Train the Model Artifact
-
-Run training once (or whenever retraining is desired):
-
-```bash
-python scripts/train_model.py
-```
-
-Expected outputs:
-
-- `backend/models/crop_recommendation_model.joblib`
-- `backend/models/training_metrics.json`
-
----
-
-## 10) Run the Backend API
-
-```bash
-uvicorn backend.app.main:app --reload
-```
-
-Default base URL:
-
-- `http://localhost:8000`
-
----
-
-## 11) Run the Frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-Default frontend URL (Vite):
-
-- `http://localhost:5173`
-
----
-
-## 12) Environment Variables
-
-Frontend supports API base URL configuration:
-
-- `VITE_API_BASE_URL` (optional)
-
-Create `frontend/.env` (or `.env.local`) if needed:
-
-```bash
-VITE_API_BASE_URL=http://localhost:8000
-```
-
-If not set, frontend defaults to `http://localhost:8000`.
-
----
-
-## 13) API Overview
+## API Documentation
 
 ### `GET /health`
 
-Basic health/model status check.
+Checks API availability and model runtime status.
 
 Example response:
 
@@ -222,7 +108,9 @@ Example response:
 
 ### `POST /predict`
 
-Request body:
+Returns crop recommendation, confidence, top-3 alternatives, and model status.
+
+Example request:
 
 ```json
 {
@@ -230,13 +118,13 @@ Request body:
   "P": 42,
   "K": 43,
   "temperature": 20.87,
-  "humidity": 82.00,
-  "ph": 6.50,
+  "humidity": 82.0,
+  "ph": 6.5,
   "rainfall": 202.93
 }
 ```
 
-Response body:
+Example response:
 
 ```json
 {
@@ -251,40 +139,74 @@ Response body:
 }
 ```
 
----
+## Local Setup Instructions
 
-## 14) Screenshots / Demo Preview
+Prerequisites:
+- Python 3.10+
+- Node.js 18+
 
-> Screenshots are not checked into this repo yet.
+1. Install dependencies
 
-Recommended placeholders for GitHub portfolio presentation:
+```bash
+pip install -r requirements.txt
+cd frontend && npm install && cd ..
+```
 
-- `docs/screenshots/home-shell.png`
-- `docs/screenshots/form-validation.png`
-- `docs/screenshots/prediction-result.png`
+2. Train the model artifact
 
-(You can replace these placeholders with actual images from your local run.)
+```bash
+python scripts/train_model.py
+```
 
----
+3. Run the backend
 
-## 15) Legacy Notebook Note
+```bash
+uvicorn backend.app.main:app --reload
+```
 
-`SmartFarming.ipynb` is kept as legacy research/EDA context.
+4. Run the frontend
 
-Production runtime does **not** depend on notebook execution. The app uses Python modules and persisted model artifacts.
+```bash
+cd frontend
+npm run dev
+```
 
----
+Optional frontend environment variable:
 
-## 16) Future Improvements
+```bash
+VITE_API_BASE_URL=http://localhost:8000
+```
 
-- Dockerized one-command local setup
-- Frontend unit tests + API integration tests
-- Better model calibration and confidence diagnostics
-- Input presets and domain-specific helper text for faster demos
-- Cloud deployment (frontend + backend)
+## Deployment Details
 
----
+- Frontend is deployed on **Vercel**: https://sf-six-puce.vercel.app
+- Backend is deployed on **Render**: https://sf-tydj.onrender.com
+- Backend CORS is configured to allow:
+  - `https://sf-six-puce.vercel.app`
+  - `http://localhost:5173`
 
-## 17) License
+This enables browser-based cross-origin calls from deployed and local frontend environments.
 
-This project is licensed under the MIT License.
+## Why This Project Matters
+
+This is a portfolio-ready project that demonstrates:
+
+- Full-stack engineering capability across UI, API, and deployment.
+- ML pipeline understanding from dataset/training to serving inference in production style.
+- Product thinking by converting a notebook workflow into a usable web application.
+- Real-world debugging and integration experience (including CORS and cross-origin API calls).
+
+## Future Improvements
+
+- Upgrade model experimentation (e.g., ensemble methods, calibration, and model comparison).
+- Add prediction caching for repeated input combinations.
+- Introduce user history to track and compare past recommendations.
+- Add lightweight GenAI explanations for prediction rationale and agronomy tips.
+- Improve mobile responsiveness and accessibility coverage.
+- Add monitoring dashboards for API latency and model health metrics.
+
+## Screenshots
+
+- Add screenshot here (landing/form view)
+- Add screenshot here (prediction result view)
+- Add screenshot here (error/validation state)
