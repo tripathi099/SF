@@ -34,7 +34,7 @@ The model returns:
 
 ---
 
-## 3) Why This Project Is Relevant (Portfolio Framing)
+## 3) Why This Project Is Relevant
 
 This project highlights skills frequently requested in product-focused software roles:
 
