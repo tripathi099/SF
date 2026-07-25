@@ -3,3 +3,8 @@ __pycache__/
 .ipynb_checkpoints/
 backend/models/*.joblib
 backend/models/*.json
+frontend/dist/
+frontend/node_modules/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts

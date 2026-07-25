@@ -22,9 +22,10 @@ This project solves that by exposing an ML-powered recommendation workflow in a 
 
 - Real-time ML prediction through a FastAPI inference endpoint.
 - Typed frontend-backend integration using TypeScript and structured API contracts.
-- Input validation, loading states, and error handling for reliable UX.
+- Matching client- and server-side input validation.
+- Cold-start messaging, bounded requests, retry guidance, and visitor-safe errors.
 - Top-3 prediction alternatives with confidence values for decision support.
-- Model status feedback surfaced from backend health/runtime state.
+- Model readiness surfaced from the backend health/runtime state.
 
 ## Architecture Overview
 
@@ -82,13 +83,41 @@ This project demonstrates the transition from notebook experimentation to a depl
 │   │   ├── theme.ts
 │   │   └── types.ts
 │   ├── index.html
-│   └── package.json
+│   ├── package.json
+│   └── package-lock.json
 ├── scripts/
 │   └── train_model.py
+├── tests/
+│   ├── test_api.py
+│   └── test_training.py
 ├── Crop_recommendation.csv
 ├── SmartFarming.ipynb             # original notebook workflow
 ├── requirements.txt
+├── requirements-dev.txt
 └── README.md
+```
+
+## Model Evaluation
+
+The committed training configuration uses a stratified 80/20 split with
+`random_state=42` across 22 crop classes.
+
+| Metric | Result |
+| --- | ---: |
+| Held-out samples | 440 |
+| Accuracy | 0.9682 |
+| Macro F1 | 0.9677 |
+| Weighted F1 | 0.9677 |
+
+The complete per-class report is committed at
+`backend/models/training_metrics.json`. The model is a constrained decision
+tree, and its output probabilities are not calibrated. The application is a
+technical demonstration rather than agronomic advice.
+
+Reproduce the metrics and model artifact with:
+
+```bash
+python scripts/train_model.py
 ```
 
 ## API Documentation
@@ -145,11 +174,11 @@ Prerequisites:
 - Python 3.10+
 - Node.js 18+
 
-1. Install dependencies
+1. Install runtime and development dependencies
 
 ```bash
-pip install -r requirements.txt
-cd frontend && npm install && cd ..
+python -m pip install -r requirements-dev.txt
+cd frontend && npm ci && cd ..
 ```
 
 2. Train the model artifact
@@ -175,12 +204,31 @@ Optional frontend environment variable:
 
 ```bash
 VITE_API_BASE_URL=http://localhost:8000
+VITE_API_TIMEOUT_MS=45000
+```
+
+## Verification
+
+Run the backend/API and training-reproducibility tests:
+
+```bash
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+Build the production frontend:
+
+```bash
+cd frontend
+npm run build
 ```
 
 ## Deployment Details
 
 - Frontend is deployed on **Vercel**: https://sf-six-puce.vercel.app
 - Backend is deployed on **Render**: https://sf-tydj.onrender.com
+- `requirements.txt` contains only the pinned inference-service dependencies.
+- Training, testing, notebook, and visualization dependencies are isolated in
+  `requirements-dev.txt`.
 - Backend CORS is configured to allow:
   - `https://sf-six-puce.vercel.app`
   - `http://localhost:5173`
@@ -204,9 +252,3 @@ This is a portfolio-ready project that demonstrates:
 - Add lightweight GenAI explanations for prediction rationale and agronomy tips.
 - Improve mobile responsiveness and accessibility coverage.
 - Add monitoring dashboards for API latency and model health metrics.
-
-## Screenshots
-
-- Add screenshot here (landing/form view)
-- Add screenshot here (prediction result view)
-- Add screenshot here (error/validation state)

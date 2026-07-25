@@ -47,7 +47,9 @@ def train_model(
 ) -> tuple[DecisionTreeClassifier, TrainingMetrics, dict[str, Any]]:
     dataset = load_dataset(dataset_path)
 
-    X = dataset[FEATURE_COLUMNS]
+    # Train on a numeric array so the persisted estimator accepts the same
+    # representation constructed by the dependency-light inference service.
+    X = dataset[FEATURE_COLUMNS].to_numpy(dtype=float)
     y = dataset[TARGET_COLUMN]
 
     X_train, X_test, y_train, y_test = train_test_split(
