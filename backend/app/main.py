@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.predictor import ModelRuntime, load_model_runtime, predict_crop
 from backend.app.schemas import HealthResponse, PredictionRequest, PredictionResponse
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Crop Recommendation API", version="0.1.0")
 app.add_middleware(
@@ -32,4 +36,8 @@ def predict(payload: PredictionRequest) -> PredictionResponse:
     try:
         return predict_crop(payload, runtime)
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {exc}") from exc
+        logger.exception("Crop prediction failed")
+        raise HTTPException(
+            status_code=500,
+            detail="Prediction could not be completed. Please try again.",
+        ) from exc
